@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Messaging</title>
+  </head>
+  <body>
+    <h1>Chat using web sockets</h1>
+
+    <script src="/socket.io/socket.io.js"></script>
+
+    <button id="connectButton">Create a Web Socket Connection</button>
+    <input id="message" type="text" aria-placeholder="Enter text..." />
+    <button id="sendBtn">Send</button>
+
+    <div id="messages"></div>
+
+    <script>
+      const socket = io();
+      const Messages = document.getElementById("messages");
+      //repond if there is any message from the server
+      socket.on("msg-from-server", (res) => {
+        // console.log("Message recieved from server: ", res);
+
+        const p = document.createElement("p");
+        p.innerText = res.split(":")[1];
+        p.style.backgroundColor = "lightgrey";
+        const socketId = res.split(":")[0];
+        if (socketId === socket.id) {
+          p.style.backgroundColor = "white";
+          p.style.textAlign = "end";
+        }
+        Messages.appendChild(p);
+      });
+
+      const message = document.getElementById("message");
+      const button = document.getElementById("sendBtn");
+      button.addEventListener("click", (err) => {
+        const msg = message.value;
+        // console.log(msg, socket.id);
+        socket.emit("message", msg); //emitting the msg with the id message
+        message.value = "";
+      });
+    </script>
+  </body>
+</html>
